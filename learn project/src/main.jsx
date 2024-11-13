@@ -1,9 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import Parentscomponent from "./Tugas 3/Props.jsx";
+import Declare from "./Tugas 3/Props";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Parentscomponent />
+    <Declare />
   </StrictMode>
 );
