@@ -1,10 +1,10 @@
 import React from "react";
 import AuthLayout from "../Templates/AuthLayout";
-import LoginForm from "../organisms/LoginForm";
+import LoginForm from "../Organism/LoginForm";
 
 const LoginPage = () => (
   <AuthLayout>
-    <h2>Login</h2>
+    <h2 className="text-xl font-semibold mb-4">Login</h2>
     <LoginForm />
   </AuthLayout>
 );

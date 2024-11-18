@@ -4,7 +4,7 @@ import RegisterForm from "../organisms/RegisterForm";
 
 const RegisterPage = () => (
   <AuthLayout>
-    <h2>Register</h2>
+    <h2 className="text-xl font-semibold mb-4">Register</h2>
     <RegisterForm />
   </AuthLayout>
 );
