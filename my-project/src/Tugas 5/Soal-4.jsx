@@ -1,6 +1,6 @@
 import React from "react";
 
-function Greeting({ time = 5 }) {
+function Greeting({ time = 23 }) {
   let message;
 
   if (time >= 5 && time <= 11) {
