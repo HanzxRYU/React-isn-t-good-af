@@ -1,19 +1,17 @@
-export const racketData = [
+export const rackets = [
   {
     id: 1,
-    name: "Yonex Astrox 99",
+    title: "Yonex Astrox 99",
     price: 180.0,
-    description:
-      "A racket with Rotational Generator System technology for maximum power and improved control.",
-    image: "path/to/image1.jpg",
+    desc: "A racket with Rotational Generator System technology for maximum power and improved control.",
+    image: "./images/Rackets.png",
   },
   {
     id: 2,
-    name: "Li-Ning N7II",
+    title: "Li-Ning N7II",
     price: 140.0,
-    description:
-      "A racket with an aerodynamic design and high flexibility, ideal for intermediate players.",
-    image: "path/to/image2.jpg",
+    desc: "A racket with an aerodynamic design and high flexibility, ideal for intermediate players.",
+    image: "./images/Rackets.png",
   },
   {
     id: 3,

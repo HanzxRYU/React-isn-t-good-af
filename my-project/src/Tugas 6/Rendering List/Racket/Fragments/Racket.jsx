@@ -1,15 +1,9 @@
 import React from "react";
-import { racketData } from "../data/data";
+import { racketData } from "../../Data/data" ;
 import Card from "../Fragments/Card";
 
 const Racket = () => (
-  <div
-    style={{
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "space-around",
-    }}
-  >
+  <div className="flex flex-wrap justify-center">
     {racketData.map((racket) => (
       <Card key={racket.id} racket={racket} />
     ))}

@@ -3,14 +3,7 @@ import React from "react";
 const Button = ({ text, onClick }) => (
   <button
     onClick={onClick}
-    style={{
-      backgroundColor: "#28a745",
-      color: "#fff",
-      border: "none",
-      padding: "10px 20px",
-      borderRadius: "5px",
-      cursor: "pointer",
-    }}
+    className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition"
   >
     {text}
   </button>

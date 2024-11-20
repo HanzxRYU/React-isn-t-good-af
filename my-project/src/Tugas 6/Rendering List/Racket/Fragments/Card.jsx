@@ -4,15 +4,7 @@ import Detail from "../Element/Detail";
 import Button from "../Element/Button";
 
 const Card = ({ racket }) => (
-  <div
-    style={{
-      border: "1px solid #ccc",
-      borderRadius: "10px",
-      padding: "15px",
-      margin: "10px",
-      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-    }}
-  >
+  <div className="border border-gray-300 rounded-lg p-4 m-2 shadow-lg hover:shadow-xl transition transform hover:scale-105">
     <Images src={racket.image} alt={racket.name} />
     <Detail
       name={racket.name}
