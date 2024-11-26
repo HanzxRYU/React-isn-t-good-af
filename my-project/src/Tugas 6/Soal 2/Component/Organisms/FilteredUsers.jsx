@@ -16,14 +16,18 @@ const FilteredUserLists = ({ users }) => {
     .map((user) => ({ name: user.name }));
 
   return (
-    <div>
-      <h2>Semua Pengguna</h2>
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold text-blue-600 mb-2">Semua Pengguna</h2>
       <UserList users={allUsers} />
 
-      <h2>Pengguna Usia di Atas 25</h2>
+      <h2 className="text-xl font-bold text-blue-600 mb-2">
+        Pengguna Usia di Atas 25
+      </h2>
       <UserList users={usersAbove25} />
 
-      <h2>Pengguna dengan Huruf 'e'</h2>
+      <h2 className="text-xl font-bold text-blue-600 mb-2">
+        Pengguna dengan Huruf 'e'
+      </h2>
       <UserList users={usersWithE} />
     </div>
   );

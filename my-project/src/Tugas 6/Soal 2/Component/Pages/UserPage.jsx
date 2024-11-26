@@ -11,8 +11,8 @@ export const users = [
 
 const UserPage = () => {
   return (
-    <div>
-      <h1>Daftar Pengguna</h1>
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Daftar Pengguna</h1>
       <FilteredUserLists users={users} />
     </div>
   );
