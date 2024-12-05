@@ -12,6 +12,6 @@ import PreventDefaultExample from "../Tugas 7/Soal-1";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <PreventDefaultExample/>
+    <Racket/>
   </StrictMode>
 );
