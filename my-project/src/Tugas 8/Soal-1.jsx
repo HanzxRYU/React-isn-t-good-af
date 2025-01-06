@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Example() {
+function Calculator() {
     const [count, setCount] = useState(0);
 
     return (
@@ -12,16 +12,4 @@ function Example() {
         </>
     );
 }
-export default Example;
-
-<>
-<h1 className="text-2xl font-bold mt-4 ml-4 ">
-  {login ? `Selamat Datang ${name}` : "Silahkan Login"}
-</h1>
-<button
-  onClick={() => setlogin(true)}
-  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-4"
->
-  Login
-</button>
-</>
+export default Calculator;
