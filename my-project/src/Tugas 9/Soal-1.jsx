@@ -1,37 +1,68 @@
+import React, { useState } from "react";
 import { products } from "./Product";
+// Data produk
 
-const ProductCard = ({ product }) => {
+
+// Komponen Card untuk menampilkan produk
+const Card = ({ product }) => {
+  const [quantity, setQuantity] = useState(0);
+
+  const increaseQuantity = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 0) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const totalPrice = quantity * product.price;
+
   return (
-    <div className="mb-4 flex items-center">
-      <div className="border border-gray-300 rounded-lg p-4 flex w-full">
-        {/* Gambar Produk */}
-        <img
-          src={product.image || "https://via.placeholder.com/300x200"}
-          alt={product.title}
-          className="w-1/3 h-auto object-cover rounded-lg"
-        />
-
-        {/* Kontainer Teks */}
-        <div className="ml-4 flex flex-col justify-center w-2/3">
-          {/* Judul Produk */}
-          <h1 className="text-2xl font-semibold">{product.title}</h1>
-
-          {/* Harga Produk */}
-          <p className="text-lg text-gray-600 mt-2">Harga: {product.price}</p>
+    <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white p-4 m-4">
+      <img
+        className="w-full h-48 object-cover"
+        src={product.image}
+        alt={product.name}
+      />
+      <div className="mt-4">
+        <h3 className="text-xl font-semibold">{product.name}</h3>
+        <p className="text-lg text-gray-700">
+          Rp {product.price.toLocaleString()}
+        </p>
+        <div className="flex items-center mt-4">
+          <button
+            onClick={decreaseQuantity}
+            className="bg-red-500 text-white px-3 py-1 rounded mr-2"
+          >
+            Kurang
+          </button>
+          <span className="text-lg">{quantity}</span>
+          <button
+            onClick={increaseQuantity}
+            className="bg-green-500 text-white px-3 py-1 rounded ml-2"
+          >
+            Tambah
+          </button>
         </div>
+        <p className="mt-4 text-lg font-semibold">
+          Total: Rp {totalPrice.toLocaleString()}
+        </p>
       </div>
     </div>
   );
 };
 
-const ProductList = () => {
+// Komponen utama aplikasi
+const App = () => {
   return (
-    <div>
+    <div className="flex flex-wrap justify-center">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <Card key={product.name} product={product} />
       ))}
     </div>
   );
 };
 
-export default ProductList;
+export default App;
