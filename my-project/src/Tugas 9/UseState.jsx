@@ -1,120 +1,98 @@
 import React, { useState } from "react";
 import { products } from "./Product";
 
-// Komponen Card
-const Card = ({ product, onQuantityChange }) => {
-  const [quantity, setQuantity] = useState(0);
-
-  const increaseQuantity = () => {
-    const newQuantity = quantity + 1;
-    setQuantity(newQuantity);
-    onQuantityChange(newQuantity);
+function ShoppingCard({ title, price, src, quantity, onUpdate }) {
+  const increment = () => {
+    onUpdate(title, price, 1);
   };
 
-  const decreaseQuantity = () => {
+  const decrement = () => {
+    if (title === "Produk C" && quantity <= 0) {
+      return;
+    }
     if (quantity > 0) {
-      const newQuantity = quantity - 1;
-      setQuantity(newQuantity);
-      onQuantityChange(newQuantity);
+      onUpdate(title, price, -1);
     }
   };
 
-  const totalPrice = quantity * product.price;
-
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white p-4 m-4">
+    <div className="bg-white rounded-lg shadow-lg p-6 transition duration-300 ease-in-out">
       <img
-        className="w-full h-48 object-cover"
-        src={product.image}
-        alt={product.name}
+        src={src}
+        alt={title}
+        className="w-full h-40 object-cover rounded-lg mb-4"
       />
-      <div className="mt-4">
-        <h3 className="text-xl font-semibold">{product.name}</h3>
-        <p className="text-lg text-gray-700">
-          Rp {product.price.toLocaleString()}
-        </p>
-        <div className="flex items-center mt-4">
-          <button
-            onClick={decreaseQuantity}
-            className="bg-red-500 text-white px-3 py-1 rounded mr-2"
-          >
-            Kurang
-          </button>
-          <span className="text-lg">{quantity}</span>
-          <button
-            onClick={increaseQuantity}
-            className="bg-green-500 text-white px-3 py-1 rounded ml-2"
-          >
-            Tambah
-          </button>
-        </div>
-        {quantity > 0 && (
-          <p className="mt-4 text-lg font-semibold">
-            Total Harga: Rp {totalPrice.toLocaleString()}
-          </p>
-        )}
+      <div className="py-2">
+        <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+        <p className="text-gray-600">Harga: Rp.{price}</p>
+        <p className="text-gray-600">Quantity: {quantity}</p>
+        <p className="text-gray-600 font-semibold">Total: Rp.{quantity * price}</p>
+      </div>
+      <div className="flex justify-between mt-4">
+        <button
+          className="bg-blue-600 text-white w-1/2 py-2 rounded-md transition duration-200 ease-in-out"
+          onClick={increment}
+        >
+          Tambah
+        </button>
+        <button
+          className="bg-red-600 text-white w-1/2 py-2 rounded-md transition duration-200 ease-in-out"
+          onClick={decrement}
+        >
+          Kurang
+        </button>
       </div>
     </div>
   );
-};
+}
 
-// Komponen utama (App)
-const App = () => {
-  const [cart, setCart] = useState([]);
+export default function Produk() {
+  const [totalHarga, setTotalHarga] = useState(0);
+  const [rincian, setRincian] = useState({});
 
-  const updateCart = (product, quantity) => {
-    setCart((prevCart) => {
-      const existingProduct = prevCart.find(
-        (item) => item.name === product.name
-      );
+  const handleUpdate = (title, price, quantityChange) => {
+    setTotalHarga((prevTotal) => prevTotal + price * quantityChange);
 
-      if (existingProduct) {
-        if (quantity === 0) {
-          return prevCart.filter((item) => item.name !== product.name);
-        }
-        return prevCart.map((item) =>
-          item.name === product.name ? { ...item, quantity } : item
-        );
-      }
+    setRincian((prevRincian) => {
+      const prevData = prevRincian[title] || { quantity: 0, total: 0 };
+      const newQuantity = prevData.quantity + quantityChange;
 
-      return [...prevCart, { ...product, quantity }];
+      return {
+        ...prevRincian,
+        [title]: {
+          quantity: newQuantity > 0 ? newQuantity : 0,
+          total: newQuantity > 0 ? newQuantity * price : 0,
+        },
+      };
     });
   };
 
-  const totalPrice = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
   return (
-    <div>
-      <div className="flex flex-wrap justify-center">
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
         {products.map((product) => (
-          <Card
-            key={product.name}
-            product={product}
-            onQuantityChange={(quantity) => updateCart(product, quantity)}
+          <ShoppingCard
+            key={product.id}
+            title={product.title}
+            price={product.price}
+            src={product.image}
+            quantity={rincian[product.title]?.quantity || 0}
+            onUpdate={handleUpdate}
           />
         ))}
       </div>
-      <div className="bg-gray-100 p-4 mt-4">
-        <h2 className="text-xl font-semibold">Keranjang Belanja</h2>
-        {cart.length === 0 ? (
-          <p>Keranjang kosong</p>
-        ) : (
-          cart.map((item) => (
-            <p key={item.name}>
-              {item.name} x {item.quantity} = Rp{" "}
-              {(item.price * item.quantity).toLocaleString()}
-            </p>
-          ))
-        )}
-        <p className="font-bold mt-4">
-          Total Harga: Rp {totalPrice.toLocaleString()}
-        </p>
+      <div className="mt-8 border-t pt-6 bg-gray-50">
+        <h2 className="text-xl font-semibold text-gray-800">Rincian Harga:</h2>
+        <ul className="list-disc list-inside mt-2">
+          {products.map((product) => (
+            <li key={product.id} className="text-gray-700">
+              {product.title} x {rincian[product.title]?.quantity || 0} = Rp.
+              {rincian[product.title]?.total || 0}
+            </li>
+          ))}
+        </ul>
+        <p className="text-lg font-bold mt-4 text-gray-800">Total Harga: Rp.{totalHarga}</p>
       </div>
-    </div>
+    </>
   );
-};
-
-export default App;
+}
