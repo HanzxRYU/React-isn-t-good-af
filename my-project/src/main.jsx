@@ -1,11 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import ProductList from "./Tugas 9/Soal-1";
-
+import TextLogger from "./Tugas 10/Soal-3";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ProductList/>
+    <TextLogger />
   </StrictMode>
 );
