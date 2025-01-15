@@ -26,7 +26,9 @@ function ShoppingCard({ title, price, src, quantity, onUpdate }) {
         <h2 className="text-lg font-bold text-gray-800">{title}</h2>
         <p className="text-gray-600">Harga: Rp.{price}</p>
         <p className="text-gray-600">Quantity: {quantity}</p>
-        <p className="text-gray-600 font-semibold">Total: Rp.{quantity * price}</p>
+        <p className="text-gray-600 font-semibold">
+          Total: Rp.{quantity * price}
+        </p>
       </div>
       <div className="flex justify-between mt-4">
         <button
@@ -91,7 +93,9 @@ export default function Produk() {
             </li>
           ))}
         </ul>
-        <p className="text-lg font-bold mt-4 text-gray-800">Total Harga: Rp.{totalHarga}</p>
+        <p className="text-lg font-bold mt-4 text-gray-800">
+          Total Harga: Rp.{totalHarga}
+        </p>
       </div>
     </>
   );
