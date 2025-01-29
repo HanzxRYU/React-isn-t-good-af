@@ -1,82 +1,60 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const LoginsPages = () => {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [token, setToken] = useState(null);
 
+  // Fungsi untuk menangani login
   const handleLogin = async (e) => {
     e.preventDefault();
-    setMessage(""); // Reset pesan sebelumnya
-
     try {
-      // Kirim data username dan password ke API
+      // Mengirim permintaan POST ke API login
       const response = await axios.post("https://fakestoreapi.com/auth/login", {
         username,
         password,
       });
 
-      // Jika berhasil
-      const { token } = response.data;
-      console.log(response.data);
-      setMessage(`Login Berhasil! Token: ${token}`);
-    } catch (error) {
-      // Jika gagal
-      setMessage("Login Gagal: Username atau Password salah.");
+      // Menyimpan token yang diterima ke localStorage
+      const receivedToken = response.data.token;
+      localStorage.setItem("token", receivedToken);
+
+      // Menampilkan pesan berhasil dan token
+      setMessage("Login Berhasil!");
+      setToken(receivedToken); // Menyimpan token di state
+    } catch (err) {
+      // Menangani error jika login gagal
+      setMessage("Login gagal. Periksa kembali username dan password.");
+      setToken(null);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Username
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
-          >
-            Login
-          </button>
-        </form>
-        {message && (
-          <div
-            className={`mt-4 text-center ${
-              message.includes("Berhasil") ? "text-green-500" : "text-red-500"
-            }`}
-          >
-            {message}
-          </div>
-        )}
-      </div>
+    <div className="login-container">
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+
+      {/* Menampilkan pesan login */}
+      {message && <p>{message}</p>}
+      {token && <p>Token berhasil disimpan di localStorage.</p>}
     </div>
   );
 };
 
-export default LoginsPages;
+export default Login;
