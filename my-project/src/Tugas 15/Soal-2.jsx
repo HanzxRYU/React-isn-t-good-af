@@ -140,7 +140,7 @@ const Products = () => {
 };
 
 // ✅ Routing Utama
-const Route = () => {
+const Rute = () => {
   return (
     <Router>
       <Routes>
@@ -152,4 +152,4 @@ const Route = () => {
   );
 };
 
-export default Route;
+export default Rute;
