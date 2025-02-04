@@ -107,6 +107,7 @@ const ProductCard = () => {
   const navigate = useNavigate();
   const { products, loading, error } = useFetchProducts();
   const [quantities, setQuantities] = useState({});
+  // 
 
   const increaseQuantity = (id) => {
     setQuantities((prevQuantities) => ({
