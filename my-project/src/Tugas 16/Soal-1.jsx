@@ -191,7 +191,7 @@ const ProductDetail = () => {
 };
 
 // Routing Utama
-const Nyocot = () => {
+const Routing = () => {
   const [userName, setUserName] = useState("");
 
   return (
@@ -205,4 +205,4 @@ const Nyocot = () => {
   );
 };
 
-export default Nyocot;
+export default Routing;
