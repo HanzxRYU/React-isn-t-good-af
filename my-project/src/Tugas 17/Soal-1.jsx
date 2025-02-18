@@ -1,145 +1,123 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
-const ProductCard = ({ userName }) => {
-  const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [newProduct, setNewProduct] = useState({
-    title: "",
-    price: "",
-    image: "",
+const API_URL = "https://api.escuelajs.co/api/v1/users/";
+
+export default function UserManagement() {
+  const [users, setUsers] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    avatar: "https://i.pravatar.cc/150",
   });
+  const [message, setMessage] = useState("");
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   useEffect(() => {
-    fetchProducts();
+    fetchUsers();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchUsers = async () => {
     try {
-      const response = await axios.get("https://fakestoreapi.com/products");
-      setProducts(response.data);
-    } catch (err) {
-      setError("Error fetching products.");
-    } finally {
-      setLoading(false);
+      const response = await axios.get(API_URL);
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
     }
   };
 
-  const handleAddProduct = async () => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await axios.post(
-        "https://fakestoreapi.com/products",
-        newProduct
-      );
-      setProducts([...products, response.data]);
-      setNewProduct({ title: "", price: "", image: "" });
-    } catch (err) {
-      setError("Failed to add product.");
+      const response = await axios.post(API_URL, formData);
+      setMessage("User created successfully!");
+      fetchUsers();
+      setLoggedInUser(response.data);
+    } catch (error) {
+      setMessage("Error creating user.");
+      console.error(error);
     }
   };
 
-  const handleDeleteProduct = async (id) => {
-    try {
-      await axios.delete(`https://fakestoreapi.com/products/${id}`);
-      setProducts(products.filter((product) => product.id !== id));
-    } catch (err) {
-      setError("Failed to delete product.");
-    }
+  const handleLogout = () => {
+    setLoggedInUser(null);
   };
-
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <h2 className="text-xl font-bold mb-4">Welcome, {userName}!</h2>
-      <div className="mb-4">
+    <div className="p-5">
+      <h1 className="text-xl font-bold">User Management</h1>
+      {loggedInUser && (
+        <div className="flex justify-between items-center my-4">
+          <span>Welcome, {loggedInUser.name}!</span>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-3 py-1 rounded"
+          >
+            Logout
+          </button>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mb-5">
         <input
           type="text"
-          placeholder="Title"
-          value={newProduct.title}
-          onChange={(e) =>
-            setNewProduct({ ...newProduct, title: e.target.value })
-          }
+          name="name"
+          placeholder="Name"
+          onChange={handleChange}
           className="border p-2 mr-2"
+          required
         />
         <input
-          type="text"
-          placeholder="Price"
-          value={newProduct.price}
-          onChange={(e) =>
-            setNewProduct({ ...newProduct, price: e.target.value })
-          }
+          type="email"
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
           className="border p-2 mr-2"
+          required
         />
         <input
-          type="text"
-          placeholder="Image URL"
-          value={newProduct.image}
-          onChange={(e) =>
-            setNewProduct({ ...newProduct, image: e.target.value })
-          }
-          className="border p-2"
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+          className="border p-2 mr-2"
+          required
         />
         <button
-          onClick={handleAddProduct}
-          className="bg-green-500 text-white px-4 py-2 ml-2"
+          type="submit"
+          className="bg-blue-500 text-white px-3 py-1 rounded"
         >
-          Add
+          Create User
         </button>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <div key={product.id} className="border p-4 rounded shadow">
-            <img
-              src={product.image}
-              alt={product.title}
-              className="w-full h-40 object-cover"
-            />
-            <h2 className="text-lg font-bold mt-2">{product.title}</h2>
-            <p className="text-gray-500">${product.price}</p>
-            <button
-              onClick={() => navigate(`/product/${product.id}`)}
-              className="bg-blue-500 text-white px-4 py-2 mt-2"
-            >
-              View
-            </button>
-            <button
-              onClick={() => handleDeleteProduct(product.id)}
-              className="bg-red-500 text-white px-4 py-2 mt-2 ml-2"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
+      </form>
+      {message && <p className="text-green-600">{message}</p>}
+
+      <h2 className="text-lg font-bold">Users List</h2>
+      <table className="table-auto w-full border-collapse border border-gray-300 mt-3">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border p-2">ID</th>
+            <th className="border p-2">Name</th>
+            <th className="border p-2">Email</th>
+            <th className="border p-2">Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id} className="text-center">
+              <td className="border p-2">{user.id}</td>
+              <td className="border p-2">{user.name}</td>
+              <td className="border p-2">{user.email}</td>
+              <td className="border p-2">{user.role || "User"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-const Nyocot = () => {
-  const [userName, setUserName] = useState(
-    localStorage.getItem("userName") || ""
-  );
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/products" element={<ProductCard userName={userName} />} />
-      </Routes>
-    </Router>
-  );
-};
-
-export default Nyocot;
+}

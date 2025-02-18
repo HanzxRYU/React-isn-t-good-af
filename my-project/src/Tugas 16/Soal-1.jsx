@@ -84,71 +84,119 @@ const Login = ({ setUserName }) => {
 };
 
 // Halaman Produk
-const ProductCard = ({ userName }) => {
-  const navigate = useNavigate();
+const Products = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cart, setCart] = useState({}); // ✅ State baru untuk menyimpan jumlah barang di keranjang
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("https://fakestoreapi.com/products");
-        setProducts(response.data);
-      } catch (err) {
-        setError("Error fetching products.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Akses Ditolak: Silakan Login Terlebih Dahulu");
+      navigate("/login");
+      return;
+    }
+
+    axios
+      .get("https://fakestoreapi.com/products", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => setProducts(response.data))
+      .catch(() => {
+        setError("Token Tidak Valid, Silakan Login Ulang");
+        localStorage.removeItem("token"); // Hapus token jika tidak valid
+        navigate("/login");
+      });
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  // ✅ Fungsi menambah barang
+  const increaseQuantity = (id) => {
+    setCart((prevCart) => ({
+      ...prevCart,
+      [id]: (prevCart[id] || 0) + 1,
+    }));
+  };
+
+  // ✅ Fungsi mengurangi barang
+  const decreaseQuantity = (id) => {
+    setCart((prevCart) => ({
+      ...prevCart,
+      [id]: Math.max((prevCart[id] || 0) - 1, 0),
+    }));
+  };
+
+  // ✅ Hitung total barang di keranjang
+  const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white py-2 px-4 rounded-lg mb-4"
-      >
-        Logout
-      </button>
-      <div className="p-4 bg-gray-200 text-center text-lg font-semibold">
-        <p>Welcome, {userName}!</p>
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white py-2 px-4 rounded-lg"
+        >
+          Logout
+        </button>
+        <span className="text-lg font-bold">🛒 Total Barang: {totalItems}</span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden transition transform hover:scale-105"
-          >
-            <img
-              src={product.image}
-              alt={product.title}
-              className="w-full h-64 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold truncate">
+
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      <h2 className="text-2xl font-semibold text-center mb-6">Daftar Produk</h2>
+
+      <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+        <thead>
+          <tr>
+            <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 border-b">
+              ID Produk
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 border-b">
+              Nama Produk
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 border-b">
+              Harga
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 border-b">
+              Kuantitas
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr key={product.id} className="hover:bg-gray-50">
+              <td className="px-6 py-4 text-sm text-gray-700">{product.id}</td>
+              <td className="px-6 py-4 text-sm text-gray-700">
                 {product.title}
-              </h2>
-              <p className="text-gray-500">${product.price}</p>
-              <button
-                className="w-full p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mt-2"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                ${product.price}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700 flex items-center">
+                <button
+                  className="bg-red-500 text-white px-2 py-1 rounded-md mr-2"
+                  onClick={() => decreaseQuantity(product.id)}
+                >
+                  -
+                </button>
+                {cart[product.id] || 0}
+                <button
+                  className="bg-green-500 text-white px-2 py-1 rounded-md ml-2"
+                  onClick={() => increaseQuantity(product.id)}
+                >
+                  +
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -198,7 +246,7 @@ const Routing = () => {
     <Router>
       <Routes>
         <Route path="/login" element={<Login setUserName={setUserName} />} />
-        <Route path="/products" element={<ProductCard userName={userName} />} />
+        <Route path="/products" element={<Products userName={userName} />} />
         <Route path="/product/:id" element={<ProductDetail />} />
       </Routes>
     </Router>

@@ -66,6 +66,7 @@ const Login = () => {
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
+  const [cart, setCart] = useState({}); // ✅ State baru untuk menyimpan jumlah barang di keranjang
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -94,14 +95,36 @@ const Products = () => {
     navigate("/login");
   };
 
+  // ✅ Fungsi menambah barang
+  const increaseQuantity = (id) => {
+    setCart((prevCart) => ({
+      ...prevCart,
+      [id]: (prevCart[id] || 0) + 1,
+    }));
+  };
+
+  // ✅ Fungsi mengurangi barang
+  const decreaseQuantity = (id) => {
+    setCart((prevCart) => ({
+      ...prevCart,
+      [id]: Math.max((prevCart[id] || 0) - 1, 0),
+    }));
+  };
+
+  // ✅ Hitung total barang di keranjang
+  const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+
   return (
     <div className="container mx-auto px-4 py-6">
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white py-2 px-4 rounded-lg mb-4"
-      >
-        Logout
-      </button>
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white py-2 px-4 rounded-lg"
+        >
+          Logout
+        </button>
+        <span className="text-lg font-bold">🛒 Total Barang: {totalItems}</span>
+      </div>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -119,6 +142,9 @@ const Products = () => {
             <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 border-b">
               Harga
             </th>
+            <th className="px-6 py-4 text-left text-sm font-medium text-gray-700 border-b">
+              Kuantitas
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -131,6 +157,21 @@ const Products = () => {
               <td className="px-6 py-4 text-sm text-gray-700">
                 ${product.price}
               </td>
+              <td className="px-6 py-4 text-sm text-gray-700 flex items-center">
+                <button
+                  className="bg-red-500 text-white px-2 py-1 rounded-md mr-2"
+                  onClick={() => decreaseQuantity(product.id)}
+                >
+                  -
+                </button>
+                {cart[product.id] || 0}
+                <button
+                  className="bg-green-500 text-white px-2 py-1 rounded-md ml-2"
+                  onClick={() => increaseQuantity(product.id)}
+                >
+                  +
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -138,6 +179,7 @@ const Products = () => {
     </div>
   );
 };
+
 
 // ✅ Routing Utama
 const Rute = () => {
