@@ -31,7 +31,7 @@ const Login = ({ setUserName }) => {
         const token = response.data.access_token;
         localStorage.setItem("token", token);
 
-        // Decode token untuk dapat userId
+        // Decode token untuk mendapatkan userId
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.sub; // 'sub' adalah ID user dari token
 
@@ -87,7 +87,7 @@ const Login = ({ setUserName }) => {
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const [cart, setCart] = useState({}); // ✅ State baru untuk menyimpan jumlah barang di keranjang
+  const [cart, setCart] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,14 +100,10 @@ const Products = () => {
     }
 
     axios
-      .get("https://fakestoreapi.com/products", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get("https://fakestoreapi.com/products")
       .then((response) => setProducts(response.data))
       .catch(() => {
-        setError("Token Tidak Valid, Silakan Login Ulang");
-        localStorage.removeItem("token"); // Hapus token jika tidak valid
-        navigate("/login");
+        setError("Gagal memuat produk");
       });
   }, [navigate]);
 
@@ -116,7 +112,6 @@ const Products = () => {
     navigate("/login");
   };
 
-  // ✅ Fungsi menambah barang
   const increaseQuantity = (id) => {
     setCart((prevCart) => ({
       ...prevCart,
@@ -124,7 +119,6 @@ const Products = () => {
     }));
   };
 
-  // ✅ Fungsi mengurangi barang
   const decreaseQuantity = (id) => {
     setCart((prevCart) => ({
       ...prevCart,
@@ -132,7 +126,6 @@ const Products = () => {
     }));
   };
 
-  // ✅ Hitung total barang di keranjang
   const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 
   return (
@@ -200,8 +193,6 @@ const Products = () => {
     </div>
   );
 };
-
-// Halaman Detail Produk
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -246,8 +237,9 @@ const Routing = () => {
     <Router>
       <Routes>
         <Route path="/login" element={<Login setUserName={setUserName} />} />
-        <Route path="/products" element={<Products userName={userName} />} />
+        <Route path="/products" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="*" element={<Login setUserName={setUserName} />} />
       </Routes>
     </Router>
   );
